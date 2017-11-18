@@ -837,74 +837,185 @@ if(ROLE == 'admin' || ROLE == 'writer'){
 	return false;
 }
 ?>
-
-
-
 <?php
-/* 百度自动推送JS优化，规避错误、重复推送、判断文章是否收录---Emlog扩展 By 小俊博客
- * 文章地址：http://blog.lsuax.com/8.html
- * 转载请保留出处，谢谢合作！
- */
-function bdPushData($id){
- $url=Url::log($id);
- if(baidu($url)==1){
- echo '<!--本文已收录，不输出推送代码-->';
- }else{
-    echo "<script>
-(function(){
-    var bp = document.createElement('script');
-    var curProtocol = window.location.protocol.split(':')[0];
-    if (curProtocol === 'https') {
-        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
-    } else {
-        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-        }
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(bp, s);
-})();
-</script>";
-    }
-}
-?>
-<?php
-/*
- * 判断内容页是否百度收录,并且以博主和或者理员身份访问博客文章时自动向百度提交未收录的文章
- *
- */
-function baidu($url){
- $url='http://www.baidu.com/s?wd='.$url;
- $curl=curl_init();
- curl_setopt($curl,CURLOPT_URL,$url);
- curl_setopt($curl,CURLOPT_RETURNTRANSFER,1);
- $rs=curl_exec($curl);
- curl_close($curl);
- if(!strpos($rs,'没有找到')){
-     return 1;
-   }
- else{
-     return 0;
-  }   
-     }
-  function checkbaidu($id){
-  $url=Url::log($id);
-  if(baidu($url)==1){
-   echo "百度已收录";
-  } else {
-   if (ROLE == 'admin' || ROLE == 'writer') {
-    $urls = array($url,);
- $api = 'http://data.zz.baidu.com/urls?site=www.aeink.com&token=DbHncVZJcV3FzstQ';
- $ch = curl_init();
- $options =  array(
-     CURLOPT_URL => $api,
-     CURLOPT_POST => true,
-     CURLOPT_RETURNTRANSFER => true,
-     CURLOPT_POSTFIELDS => implode("\n", $urls),
-     CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),);
- curl_setopt_array($ch, $options);
- $result = curl_exec($ch);
- echo '已自动提交给度娘';
-   }
-     echo "<a style=\"color:red;\" rel=\"external nofollow\" title=\"点击提交收录\" target=\"_blank\" href=\"http://zhanzhang.baidu.com/sitesubmit/index?sitename=$url\">坐等收录</a>";
-  }
+//在线人数统计
+//首先你要有读写文件的权限
+//本程序可以直接运行,第一次报错，刷新即可小俊博客 www.xjdog.cn
+$online_log = "count.dat"; //保存人数的文件,
+$timeout = 30;//30秒内没动作者,认为掉线
+$entries = file($online_log);
+$temp = array();
+for ($i=0;$i<count($entries);$i++) {
+ $entry = explode(",",trim($entries[$i]));
+ if (($entry[0] != getenv('REMOTE_ADDR')) && ($entry[1] > time())) {
+  array_push($temp,$entry[0].",".$entry[1]."\n"); //取出其他浏览者的信息,并去掉超时者,保存进$temp
  }
+}
+array_push($temp,getenv('REMOTE_ADDR').",".(time() + ($timeout))."\n"); //更新浏览者的时间
+$users_online = count($temp); //计算在线人数
+$entries = implode("",$temp);
+//写入文件
+$fp = fopen($online_log,"w");
+flock($fp,LOCK_EX); //flock() 不能在NFS以及其他的一些网络文件系统中正常工作
+fputs($fp,$entries);
+flock($fp,LOCK_UN);
+fclose($fp);
+?>
+<script src="https://www.xjdog.cn/xjdov1.js" data-no-instant></script>
+<script>
+POWERMODE.colorful = true; // make power mode colorful
+POWERMODE.shake = false; // turn off shake
+document.body.addEventListener('input', POWERMODE);
+</script>
+</body>
+</html>
+
+<?php
+/**
+*OwO表情
+*by 小俊博客
+*https://www.xjdog.cn
+*/
+function comment_add_owo($comment_text) {
+	$data_OwO = array(
+		'@(暗地观察)' => '<img src="/content/templates/XJDOV/OwO/alu/暗地观察.png" alt="暗地观察" class="OwO-img">',
+		'@(便便)' => '<img src="/content/templates/XJDOV/OwO/alu/便便.png" alt="便便" class="OwO-img">',
+		'@(不出所料)' => '<img src="/content/templates/XJDOV/OwO/alu/不出所料.png" alt="不出所料" class="OwO-img">',
+		'@(不高兴)' => '<img src="/content/templates/XJDOV/OwO/alu/不高兴.png" alt="不高兴" class="OwO-img">',
+		'@(不说话)' => '<img src="/content/templates/XJDOV/OwO/alu/不说话.png" alt="不说话" class="OwO-img">',
+		'@(抽烟)' => '<img src="/content/templates/XJDOV/OwO/alu/抽烟.png" alt="抽烟" class="OwO-img">',
+		'@(呲牙)' => '<img src="/content/templates/XJDOV/OwO/alu/呲牙.png" alt="呲牙" class="OwO-img">',
+		'@(大囧)' => '<img src="/content/templates/XJDOV/OwO/alu/大囧.png" alt="大囧" class="OwO-img">',
+		'@(得意)' => '<img src="/content/templates/XJDOV/OwO/alu/得意.png" alt="得意" class="OwO-img">',
+		'@(愤怒)' => '<img src="/content/templates/XJDOV/OwO/alu/愤怒.png" alt="愤怒" class="OwO-img">',
+		'@(尴尬)' => '<img src="/content/templates/XJDOV/OwO/alu/尴尬.png" alt="尴尬" class="OwO-img">',
+		'@(高兴)' => '<img src="/content/templates/XJDOV/OwO/alu/高兴.png" alt="高兴" class="OwO-img">',
+		'@(鼓掌)' => '<img src="/content/templates/XJDOV/OwO/alu/鼓掌.png" alt="鼓掌" class="OwO-img">',
+		'@(观察)' => '<img src="/content/templates/XJDOV/OwO/alu/观察.png" alt="观察" class="OwO-img">',
+		'@(害羞)' => '<img src="/content/templates/XJDOV/OwO/alu/害羞.png" alt="害羞" class="OwO-img">',
+		'@(汗)' => '<img src="/content/templates/XJDOV/OwO/alu/汗.png" alt="汗" class="OwO-img">',
+		'@(黑线)' => '<img src="/content/templates/XJDOV/OwO/alu/黑线.png" alt="黑线" class="OwO-img">',
+		'@(欢呼)' => '<img src="/content/templates/XJDOV/OwO/alu/欢呼.png" alt="欢呼" class="OwO-img">',
+		'@(击掌)' => '<img src="/content/templates/XJDOV/OwO/alu/击掌.png" alt="击掌" class="OwO-img">',
+		'@(惊喜)' => '<img src="/content/templates/XJDOV/OwO/alu/惊喜.png" alt="惊喜" class="OwO-img">',
+		'@(看不见)' => '<img src="/content/templates/XJDOV/OwO/alu/看不见.png" alt="看不见" class="OwO-img">',
+		'@(看热闹)' => '<img src="/OwO/alu/看热闹.png" alt="看热闹" class="OwO-img">',
+		'@(抠鼻)' => '<img src="/content/templates/XJDOV/OwO/alu/抠鼻.png" alt="抠鼻" class="OwO-img">',
+		'@(口水)' => '<img src="/content/templates/XJDOV/OwO/alu/口水.png" alt="口水" class="OwO-img">',
+		'@(哭泣)' => '<img src="/content/templates/XJDOV/OwO/alu/哭泣.png" alt="哭泣" class="OwO-img">',
+		'@(狂汗)' => '<img src="/content/templates/XJDOV/OwO/alu/狂汗.png" alt="狂汗" class="OwO-img">',
+		'@(蜡烛)' => '<img src="/content/templates/XJDOV/OwO/alu/蜡烛.png" alt="蜡烛" class="OwO-img">',
+		'@(脸红)' => '<img src="/content/templates/XJDOV/OwO/alu/脸红.png" alt="脸红" class="OwO-img">',
+		'@(内伤)' => '<img src="/content/templates/XJDOV/OwO/alu/内伤.png" alt="内伤" class="OwO-img">',
+		'@(喷水)' => '<img src="/content/templates/XJDOV/OwO/alu/喷水.png" alt="喷水" class="OwO-img">',
+		'@(喷血)' => '<img src="/content/templates/XJDOV/OwO/alu/喷血.png" alt="喷血" class="OwO-img">',
+		'@(期待)' => '<img src="/content/templates/XJDOV/OwO/alu/期待.png" alt="期待" class="OwO-img">',
+		'@(亲亲)' => '<img src="/content/templates/XJDOV/OwO/alu/亲亲.png" alt="亲亲" class="OwO-img">',
+		'@(傻笑)' => '<img src="/content/templates/XJDOV/OwO/alu/傻笑.png" alt="傻笑" class="OwO-img">',
+		'@(扇耳光)' => '<img src="/content/templates/XJDOV/OwO/alu/扇耳光.png" alt="扇耳光" class="OwO-img">',
+		'@(深思)' => '<img src="/content/templates/XJDOV/OwO/alu/深思.png" alt="深思" class="OwO-img">',
+		'@(锁眉)' => '<img src="/content/templates/XJDOV/OwO/alu/锁眉.png" alt="锁眉" class="OwO-img">',
+		'@(投降)' => '<img src="/content/templates/XJDOV/OwO/alu/投降.png" alt="投降" class="OwO-img">',
+		'@(吐)' => '<img src="/content/templates/XJDOV/OwO/alu/吐.png" alt="吐" class="OwO-img">',
+		'@(吐舌)' => '<img src="/content/templates/XJDOV/OwO/alu/吐舌.png" alt="吐舌" class="OwO-img">',
+		'@(吐血倒地)' => '<img src="/content/templates/XJDOV/OwO/alu/吐血倒地.png" alt="吐血倒地" class="OwO-img">',
+		'@(无奈)' => '<img src="/content/templates/XJDOV/OwO/alu/无奈.png" alt="无奈" class="OwO-img">',
+		'@(无所谓)' => '<img src="/content/templates/XJDOV/OwO/alu/无所谓.png" alt="无所谓" class="OwO-img">',
+		'@(无语)' => '<img src="/content/templates/XJDOV/OwO/alu/无语.png" alt="无语" class="OwO-img">',
+		'@(喜极而泣)' => '<img src="/content/templates/XJDOV/OwO/alu/喜极而泣.png" alt="喜极而泣" class="OwO-img">',
+		'@(献花)' => '<img src="/content/templates/XJDOV/OwO/alu/献花.png" alt="献花" class="OwO-img">',
+		'@(献黄瓜)' => '<img src="/content/templates/XJDOV/OwO/alu/献黄瓜.png" alt="献黄瓜" class="OwO-img">',
+		'@(想一想)' => '<img src="/content/templates/XJDOV/OwO/alu/想一想.png" alt="想一想" class="OwO-img">',
+		'@(小怒)' => '<img src="/content/templates/XJDOV/OwO/alu/小怒.png" alt="小怒" class="OwO-img">',
+		'@(小眼睛)' => '<img src="/content/templates/XJDOV/OwO/alu/小眼睛.png" alt="小眼睛" class="OwO-img">',
+		'@(邪恶)' => '<img src="/content/templates/XJDOV/OwO/alu/邪恶.png" alt="邪恶" class="OwO-img">',
+		'@(咽气)' => '<img src="/content/templates/XJDOV/OwO/alu/咽气.png" alt="咽气" class="OwO-img">',
+		'@(阴暗)' => '<img src="/content/templates/XJDOV/OwO/alu/阴暗.png" alt="阴暗" class="OwO-img">',
+		'@(赞一个)' => '<img src="/content/templates/XJDOV/OwO/alu/赞一个.png" alt="赞一个" class="OwO-img">',
+		'@(长草)' => '<img src="/content/templates/XJDOV/OwO/alu/长草.png" alt="长草" class="OwO-img">',
+		'@(中刀)' => '<img src="/content/templates/XJDOV/OwO/alu/中刀.png" alt="中刀" class="OwO-img">',
+		'@(中枪)' => '<img src="/content/templates/XJDOV/OwO/alu/中枪.png" alt="中枪" class="OwO-img">',
+		'@(中指)' => '<img src="/content/templates/XJDOV/OwO/alu/中指.png" alt="中指" class="OwO-img">',
+		'@(肿包)' => '<img src="/content/templates/XJDOV/OwO/alu/肿包.png" alt="肿包" class="OwO-img">',
+		'@(皱眉)' => '<img src="/content/templates/XJDOV/OwO/alu/皱眉.png" alt="皱眉" class="OwO-img">',
+		'@(装大款)' => '<img src="/content/templates/XJDOV/OwO/alu/装大款.png" alt="装大款" class="OwO-img">',
+		'@(坐等)' => '<img src="/content/templates/XJDOV/OwO/alu/坐等.png" alt="坐等" class="OwO-img">',
+		'@[啊]' => '<img src="/content/templates/XJDOV/OwO/paopao/啊.png" alt="啊" class="OwO-img">',
+		'@[爱心]' => '<img src="/content/templates/XJDOV/OwO/paopao/爱心.png" alt="爱心" class="OwO-img">',
+		'@[鄙视]' => '<img src="/content/templates/XJDOV/OwO/paopao/鄙视.png" alt="鄙视" class="OwO-img">',
+		'@[便便]' => '<img src="/content/templates/XJDOV/OwO/paopao/便便.png" alt="便便" class="OwO-img">',
+		'@[不高兴]' => '<img src="/content/templates/XJDOV/OwO/paopao/不高兴.png" alt="不高兴" class="OwO-img">',
+		'@[彩虹]' => '<img src="/content/templates/XJDOV/OwO/paopao/彩虹.png" alt="彩虹" class="OwO-img">',
+		'@[茶杯]' => '<img src="/content/templates/XJDOV/OwO/paopao/茶杯.png" alt="茶杯" class="OwO-img">',
+		'@[吃瓜]' => '<img src="/content/templates/XJDOV/OwO/paopao/吃瓜.png" alt="吃瓜" class="OwO-img">',
+		'@[吃翔]' => '<img src="/content/templates/XJDOV/OwO/paopao/吃翔.png" alt="吃翔" class="OwO-img">',
+		'@[大拇指]' => '<img src="/content/templates/XJDOV/OwO/paopao/大拇指.png" alt="大拇指" class="OwO-img">',
+		'@[蛋糕]' => '<img src="/content/templates/XJDOV/OwO/paopao/蛋糕.png" alt="蛋糕" class="OwO-img">',
+		'@[嘚瑟]' => '<img src="/content/templates/XJDOV/OwO/paopao/嘚瑟.png" alt="嘚瑟" class="OwO-img">',
+		'@[灯泡]' => '<img src="/content/templates/XJDOV/OwO/paopao/灯泡.png" alt="灯泡" class="OwO-img">',
+		'@[乖]' => '<img src="/content/templates/XJDOV/content/templates/XJDOV/OwO/paopao/乖.png" alt="乖" class="OwO-img">',
+		'@[哈哈]' => '<img src="/content/templates/XJDOV/OwO/paopao/哈哈.png" alt="哈哈" class="OwO-img">',
+		'@[汗]' => '<img src="/content/templates/XJDOV/OwO/paopao/汗.png" alt="汗" class="OwO-img">',
+		'@[呵呵]' => '<img src="/content/templates/XJDOV/OwO/paopao/呵呵.png" alt="呵呵" class="OwO-img">',
+		'@[黑线]' => '<img src="/content/templates/XJDOV/OwO/paopao/黑线.png" alt="黑线" class="OwO-img">',
+		'@[红领巾]' => '<img src="/content/templates/XJDOV/OwO/paopao/红领巾.png" alt="红领巾" class="OwO-img">',
+		'@[呼]' => '<img src="/content/templates/XJDOV/OwO/paopao/呼.png" alt="呼" class="OwO-img">',
+		'@[花心]' => '<img src="/content/templates/XJDOV/OwO/paopao/花心.png" alt="花心" class="OwO-img">',
+		'@[滑稽]' => '<img src="/content/templates/XJDOV/OwO/paopao/滑稽.png" alt="滑稽" class="OwO-img">',
+		'@[惊恐]' => '<img src="/content/templates/XJDOV/OwO/paopao/惊恐.png" alt="惊恐" class="OwO-img">',
+		'@[惊哭]' => '<img src="/content/templates/XJDOV/OwO/paopao/惊哭.png" alt="惊哭" class="OwO-img">',
+		'@[惊讶]' => '<img src="/content/templates/XJDOV/OwO/paopao/惊讶.png" alt="惊讶" class="OwO-img">',
+		'@[开心]' => '<img src="/content/templates/XJDOV/OwO/paopao/开心.png" alt="开心" class="OwO-img">',
+		'@[酷]' => '<img src="/content/templates/XJDOV/OwO/paopao/酷.png" alt="酷" class="OwO-img">',
+		'@[狂汗]' => '<img src="/content/templates/XJDOV/OwO/paopao/狂汗.png" alt="狂汗" class="OwO-img">',
+		'@[蜡烛]' => '<img src="/content/templates/XJDOV/OwO/paopao/蜡烛.png" alt="蜡烛" class="OwO-img">',
+		'@[懒得理]' => '<img src="/content/templates/XJDOV/OwO/paopao/懒得理.png" alt="懒得理" class="OwO-img">',
+		'@[泪]' => '<img src="/content/templates/XJDOV/OwO/paopao/泪.png" alt="泪" class="OwO-img">',
+		'@[冷]' => '<img src="/content/templates/XJDOV/OwO/paopao/冷.png" alt="冷" class="OwO-img">',
+		'@[礼物]' => '<img src="/content/templates/XJDOV/OwO/paopao/礼物.png" alt="礼物" class="OwO-img">',
+		'@[玫瑰]' => '<img src="/content/templates/XJDOV/OwO/paopao/玫瑰.png" alt="玫瑰" class="OwO-img">',
+		'@[勉强]' => '<img src="/content/templates/XJDOV/OwO/paopao/勉强.png" alt="勉强" class="OwO-img">',
+		'@[你懂的]' => '<img src="/content/templates/XJDOV/OwO/paopao/你懂的.png" alt="你懂的" class="OwO-img">',
+		'@[怒]' => '<img src="/content/templates/XJDOV/OwO/paopao/怒.png" alt="怒" class="OwO-img">',
+		'@[喷]' => '<img src="/content/templates/XJDOV/OwO/paopao/喷.png" alt="喷" class="OwO-img">',
+		'@[钱]' => '<img src="/content/templates/XJDOV/OwO/paopao/钱.png" alt="钱" class="OwO-img">',
+		'@[钱币]' => '<img src="/content/templates/XJDOV/OwO/paopao/钱币.png" alt="钱币" class="OwO-img">',
+		'@[弱]' => '<img src="/content/templates/XJDOV/OwO/paopao/弱.png" alt="弱" class="OwO-img">',
+		'@[三道杠]' => '<img src="/content/templates/XJDOV/OwO/paopao/三道杠.png" alt="三道杠" class="OwO-img">',
+		'@[沙发]' => '<img src="/content/templates/XJDOV/OwO/paopao/沙发.png" alt="沙发" class="OwO-img">',
+		'@[生气]' => '<img src="/content/templates/XJDOV/OwO/paopao/生气.png" alt="生气" class="OwO-img">',
+		'@[胜利]' => '<img src="/content/templates/XJDOV/OwO/paopao/胜利.png" alt="胜利" class="OwO-img">',
+		'@[手纸]' => '<img src="/content/templates/XJDOV/OwO/paopao/手纸.png" alt="手纸" class="OwO-img">',
+		'@[睡觉]' => '<img src="/content/templates/XJDOV/OwO/paopao/睡觉.png" alt="睡觉" class="OwO-img">',
+		'@[酸爽]' => '<img src="/content/templates/XJDOV/OwO/paopao/酸爽.png" alt="酸爽" class="OwO-img">',
+		'@[太开心]' => '<img src="/content/templates/XJDOV/OwO/paopao/太开心.png" alt="太开心" class="OwO-img">',
+		'@[太阳]' => '<img src="/content/templates/XJDOV/OwO/paopao/太阳.png" alt="太阳" class="OwO-img">',
+		'@[吐]' => '<img src="/content/templates/XJDOV/OwO/paopao/吐.png" alt="吐" class="OwO-img">',
+		'@[吐舌]' => '<img src="/content/templates/XJDOV/OwO/paopao/吐舌.png" alt="吐舌" class="OwO-img">',
+		'@[挖鼻]' => '<img src="/content/templates/XJDOV/OwO/paopao/挖鼻.png" alt="挖鼻" class="OwO-img">',
+		'@[委屈]' => '<img src="/content/templates/XJDOV/OwO/paopao/委屈.png" alt="委屈" class="OwO-img">',
+		'@[捂嘴笑]' => '<img src="/content/templates/XJDOV/OwO/paopao/捂嘴笑.png" alt="捂嘴笑" class="OwO-img">',
+		'@[犀利]' => '<img src="/content/templates/XJDOV/OwO/paopao/犀利.png" alt="犀利" class="OwO-img">',
+		'@[香蕉]' => '<img src="/content/templates/XJDOV/OwO/paopao/香蕉.png" alt="香蕉" class="OwO-img">',
+		'@[小乖]' => '<img src="/content/templates/XJDOV/OwO/paopao/小乖.png" alt="小乖" class="OwO-img">',
+		'@[小红脸]' => '<img src="/content/templates/XJDOV/OwO/paopao/小红脸.png" alt="小红脸" class="OwO-img">',
+		'@[笑尿]' => '<img src="/content/templates/XJDOV/OwO/paopao/笑尿.png" alt="笑尿" class="OwO-img">',
+		'@[笑眼]' => '<img src="/content/templates/XJDOV/OwO/paopao/笑眼.png" alt="笑眼" class="OwO-img">',
+		'@[心碎]' => '<img src="/content/templates/XJDOV/OwO/paopao/心碎.png" alt="心碎" class="OwO-img">',
+		'@[星星月亮]' => '<img src="/content/templates/XJDOV/OwO/paopao/星星月亮.png" alt="星星月亮" class="OwO-img">',
+		'@[呀咩爹]' => '<img src="/content/templates/XJDOV/OwO/paopao/呀咩爹.png" alt="呀咩爹" class="OwO-img">',
+		'@[药丸]' => '<img src="/content/templates/XJDOV/OwO/paopao/药丸.png" alt="药丸" class="OwO-img">',
+		'@[咦]' => '<img src="/content/templates/XJDOV/OwO/paopao/咦.png" alt="咦" class="OwO-img">',
+		'@[疑问]' => '<img src="/content/templates/XJDOV/OwO/paopao/疑问.png" alt="疑问" class="OwO-img">',
+		'@[阴险]' => '<img src="/content/templates/XJDOV/OwO/paopao/阴险.png" alt="阴险" class="OwO-img">',
+		'@[音乐]' => '<img src="/content/templates/XJDOV/OwO/paopao/音乐.png" alt="音乐" class="OwO-img">',
+		'@[真棒]' => '<img src="/content/templates/XJDOV/OwO/paopao/真棒.png" alt="真棒" class="OwO-img">',
+		'@[nico]' => '<img src="/content/templates/XJDOV/OwO/paopao/nico.png" alt="nico" class="OwO-img">',
+		'@[OK]' => '<img src="/content/templates/XJDOV/OwO/paopao/OK.png" alt="OK" class="OwO-img">',
+		'@[what]' => '<img src="/content/templates/XJDOV/OwO/paopao/what.png" alt="what" class="OwO-img">',
+		'@[doge]' => '<img src="/content/templates/XJDOV/OwO/doge.png" alt="doge" class="OwO-img">',
+		'@[原谅她]' => '<img src="/content/templates/XJDOV/OwO/原谅她.png" alt="原谅她" class="OwO-img">'
+	);
+	return strtr($comment_text,$data_OwO);
+}
 ?>
