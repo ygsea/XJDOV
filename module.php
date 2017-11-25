@@ -1,4 +1,4 @@
-﻿<?php
+﻿﻿<?php
 /*
  * @XJDOV   1.0.1
  * @authors 小俊博客：www.xjdog.cn
@@ -65,7 +65,7 @@ function widget_blogger($title){
 			        </div>
 			        <h4><?php echo $name; ?></h4>
 			        <p class="seta"><?php echo $user_cache[1]['des']; ?></p><br>
-			        <center><a href="https://jq.qq.com/?_wv=1027&k=5F4TD3M" target="_blank">小俊博客交流群&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://wpa.qq.com/msgrd?v=3&uin=2647386761&site=qq&menu=yes" target="_blank">小俊博客交流群下&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			        <center><a href="https://jq.qq.com/?_wv=1027&k=5F4TD3M" target="_blank">小俊博客交流群&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://wpa.qq.com/msgrd?v=3&uin=2647386761&site=qq&menu=yes" target="_blank">小俊阁下&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					<a href="https://weibo.com/u/6035706199" target="_blank">官方微博</center></a><br>
 			        </a>				
 		             </div>
@@ -283,7 +283,7 @@ function widget_link($title){
 	$link_cache = $CACHE->readCache('link');
     //if (!blog_tool_ishome()) return;#只在首页显示友链去掉双斜杠注释即可
 	?>
-	<div class="widget widget_links"><span class="icon"><i class="fa fa-link"></i></span><a href="http://www.xjdog.cn/post/25"><h3>友情链接</h3></a>
+	<div class="widget widget_links"><span class="icon"><i class="fa fa-link"></i></span><a href="http://liuniange.cn/post/25"><h3>友情链接</h3></a>
 	<?php foreach($link_cache as $value): ?>
 	<li><a href="<?php echo $value['url']; ?>" title="<?php echo $value['des']; ?>" target="_blank"><i class="fa fa-link fa-fw"></i><?php echo $value['link']; ?></a></li>  
 	<?php endforeach; ?></ul>
@@ -577,7 +577,7 @@ function blog_comments_post($logid,$ckname,$ckmail,$ckurl,$verifyCode,$allow_rem
 			</div>
 			
 			<div class="form-group form_textarea">
-				<div class="comment_textare"><textarea name="comment" id="comment" class="OwO-textarea" placeholder="让我们一起文明的谈天说地-小俊博客" title="让我们一起谈天说地-小俊博客"></textarea>
+				<div class="comment_textare"><textarea name="comment" id="comment" class="OwO-textarea" placeholder="让我们一起文明的谈天说地-小俊博客" title="让我们一起谈天说地-流年博客"></textarea>
 				<div title="OwO" class="OwO"></div>
                 <script>
 				var OwO_demo = new OwO({
@@ -1331,7 +1331,7 @@ if(ROLE == 'admin' || ROLE == 'writer'){
 <?php
 //在线人数统计
 //首先你要有读写文件的权限
-//本程序可以直接运行,第一次报错，刷新即可-小俊博客 www.xjdog.cn
+//本程序可以直接运行,第一次报错，刷新即可-流年博客 liuniange.cn
 $online_log = "count.dat"; //保存人数的文件,
 $timeout = 30;//30秒内没动作者,认为掉线
 $entries = file($online_log);
@@ -1352,7 +1352,7 @@ fputs($fp,$entries);
 flock($fp,LOCK_UN);
 fclose($fp);
 ?>
-<script src="/content/templates/XJDOV/js/xjbk.js" data-no-instant></script>
+<script src="http://liuniange.cn/lnbk.js" data-no-instant></script>
 <script>
 POWERMODE.colorful = true; // make power mode colorful
 POWERMODE.shake = false; // turn off shake
