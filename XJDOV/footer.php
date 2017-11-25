@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * 页面底部信息
  */
@@ -6,7 +6,7 @@ if(!defined('EMLOG_ROOT')) {exit('error!');}
 ?>
 <footer class="footer">
 <div class="container">
-<div class="copyright"><?php echo "在线人数：".$users_online."人";?><a href="https://jq.qq.com/?_wv=1027&k=4BSdU7C">&nbsp;</a>&nbsp;|&nbsp;<a href="http://liuniangekm.cn" title="小俊大帅比" target="_blank">小俊网络</a>&nbsp;|&nbsp;<script src="https://s11.cnzz.com/z_stat.php?id=1256655437&web_id=1256655437" language="JavaScript"></script>&nbsp;|&nbsp;<a href="http://www.xjdog.cn/sitemap.xml" target="_blank" rel="sitemap">XML</a>&nbsp;|&nbsp;<a href="http://www.xjdog.cn/map.html" target="_blank" rel="sitemap">网站地图</a></br></br><img src="http://www.xjdog.cn/tp/icp.png" class="footer-icon">&nbsp;<a href="http://www.miibeian.gov.cn" target="_blank">黔ICP备17003671号-1</a>&nbsp;&nbsp;&nbsp;&nbsp;<br><br><img src="http://www.xjdog.cn/tp/batb.png" class="footer-icon">  <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=52010202000353">贵公网安备 52010202000353号</a></div>
+<div class="copyright"><?php echo "在线人数：".$users_online."人";?><a href="https://jq.qq.com/?_wv=1027&k=4BSdU7C">&nbsp;</a>&nbsp;|&nbsp;<a href="http://liuniangekm.cn" title="小俊大帅比" target="_blank">小俊网络</a>&nbsp;|&nbsp;<a href="http://www.xjdog.cn/sitemap.xml" target="_blank" rel="sitemap">XML</a>&nbsp;|&nbsp;<a href="http://www.xjdog.cn/map.html" target="_blank" rel="sitemap">网站地图</a>
 <?php echo $footer_info; ?>
 </footer>
 <?php doAction('index_footer'); ?>
